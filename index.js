@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const config = require("config");
 
 if (!config.get("jwtPrivateKey")) {
   console.error("jwtPrivateKey Error");
