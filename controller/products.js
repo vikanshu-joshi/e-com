@@ -45,9 +45,6 @@ const getProductsSearch = async (req, res) => {
                                             '$options': 'i'
                                         }
                                     }, {brand: {'$regex': search, '$options': 'i'}}]
-                                }, {score: {'$meta': 'textscore'}})
-                                .sort({
-                                    score: {'$meta': 'textScore'}
                                 });
 
 
@@ -73,9 +70,6 @@ const getCategories = async (req, res) => {
                                         '$regex': category,
                                         '$options': 'i'
                                     }
-                                }, {score: {$meta: 'textscore'}})
-                                .sort({
-                                    score: {$meta: 'textScore'}
                                 })
 
         res.status(200).send(prods)
