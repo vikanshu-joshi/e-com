@@ -64,7 +64,7 @@ const signup = async (req, res) => {
     })
     .catch((error) => {
       console.log(error);
-      return res.status(500).send({ error: "Something wen't wrong" });
+      return res.status(500).send({ error: "Something went wrong" });
     });
 };
 
@@ -88,7 +88,7 @@ const changePassword = async (req, res) => {
 
   const value = await UserModel.findOne({ _id: id });
 
-  if (!req.body.oldPassword || req.body.oldPassword != value.password) {
+  if (!req.body.oldPassword || req.body.oldPassword !== value.password) {
     return res.status(400).send({
       status: 0,
       error: "Invalid password",
