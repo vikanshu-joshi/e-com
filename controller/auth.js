@@ -1,6 +1,11 @@
 const validator = require("validator");
 const UserModel = require("../models/user");
 const verifyToken = require("../utilities/verifyToken");
+const ProductModel = require("../models/products");
+const HistoryModel = require("../models/login_history");
+const Sniffr = require("sniffr");
+const requestIp = require("request-ip");
+const geoip = require("geoip-lite");
 
 const login = async (req, res) => {
   if (!req.body.email && !validator.isEmail(`${req.body.email}`)) {
@@ -21,8 +26,38 @@ const login = async (req, res) => {
   const user = await UserModel.findOne({
     email: req.body.email,
     password: req.body.password,
-  }).select("-password");
+  })
+    .select("-password")
+    .populate("login_history");
+
   if (user) {
+    const userAgent = req.headers["user-agent"];
+    const s = new Sniffr();
+    s.sniff(userAgent);
+    const clientIp = requestIp.getClientIp(req);
+    const geo = geoip.lookup(clientIp);
+
+    const history = new HistoryModel({
+      browser: JSON.stringify(s.browser),
+      os: JSON.stringify(s.os),
+      device: JSON.stringify(s.device),
+      location: JSON.stringify(geo),
+      clientIp: clientIp,
+    });
+
+    await history.save();
+
+    UserModel.findByIdAndUpdate(
+      user._id,
+      {
+        $push: { login_history: history._id },
+      },
+      { new: true, upsert: true },
+      function (err, managerparent) {
+        if (err) throw err;
+        console.log(managerparent);
+      }
+    );
     return res.send(user);
   }
   return res
