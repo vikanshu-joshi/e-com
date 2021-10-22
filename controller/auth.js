@@ -26,9 +26,7 @@ const login = async (req, res) => {
   const user = await UserModel.findOne({
     email: req.body.email,
     password: req.body.password,
-  })
-    .select("-password")
-    .populate("login_history");
+  }).select("-password");
 
   if (user) {
     const userAgent = req.headers["user-agent"];
@@ -47,16 +45,12 @@ const login = async (req, res) => {
 
     await history.save();
 
-    UserModel.findByIdAndUpdate(
+    await UserModel.findByIdAndUpdate(
       user._id,
       {
         $push: { login_history: history._id },
       },
-      { new: true, upsert: true },
-      function (err, managerparent) {
-        if (err) throw err;
-        console.log(managerparent);
-      }
+      { new: true, upsert: true }
     );
     return res.send(user);
   }

@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const config = require("config");
 const authController = require("./routes/auth");
+const addressController = require("./routes/address");
 
 if (!config.get("jwtPrivateKey")) {
   console.error("jwtPrivateKey Error");
@@ -31,6 +32,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/auth", authController);
+app.use("/addresses", addressController);
 
 const PORT = 3000;
 app.listen(PORT, () => console.log("Server started at port ", PORT));
