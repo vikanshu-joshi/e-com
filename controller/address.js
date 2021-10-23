@@ -1,12 +1,8 @@
 const UserModel = require("../models/user");
-const verifyToken = require("../utilities/verifyToken");
 const AddressModel = require("../models/addresses");
 
 const addAddress = async (req, res) => {
-  const id = verifyToken(req, res);
-  if (!id) {
-    return;
-  }
+  const id = req.user;
   const address = new AddressModel({
     phone: req.body.phone,
     address: [req.body.line1, req.body.line2, req.body.line3],
@@ -31,10 +27,7 @@ const addAddress = async (req, res) => {
 };
 
 const delAddress = async (req, res) => {
-  const id = verifyToken(req, res);
-  if (!id) {
-    return;
-  }
+  const id = req.user;
   const addressId = req.params.id;
   await AddressModel.findByIdAndDelete(addressId);
   await UserModel.findByIdAndUpdate(id, { $pull: { addresses: addressId } });
@@ -47,10 +40,7 @@ const delAddress = async (req, res) => {
 };
 
 const getAddresses = async (req, res) => {
-  const id = verifyToken(req, res);
-  if (!id) {
-    return;
-  }
+  const id = req.user;
   const user = await UserModel.findById(id).populate("addresses");
   return res.send({
     status: 1,
