@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const TABLES = require("../variables/tables");
 
 const schema = new mongoose.Schema({
   product_name: String,
@@ -11,4 +12,4 @@ const schema = new mongoose.Schema({
   brand: String,
 });
 
-module.exports = mongoose.model("Products", schema);
+module.exports = mongoose.model(TABLES.PRODUCTS_TABLE, schema);
