@@ -1,6 +1,5 @@
 const validator = require("validator");
 const UserModel = require("../models/user");
-const verifyToken = require("../utilities/verifyToken");
 const ProductModel = require("../models/products");
 const HistoryModel = require("../models/login_history");
 const Sniffr = require("sniffr");
@@ -98,22 +97,11 @@ const signup = async (req, res) => {
 };
 
 const forgotPassword = async (req, res) => {
-  const email = req.body.email;
-  if (!email && !validator.isEmail(`${email}`)) {
-    return res.status(400).send({
-      status: 0,
-      error: "Invalid email",
-      message: "",
-      data: {},
-    });
-  }
+  const id = req.user;
 };
 
 const changePassword = async (req, res) => {
-  const id = verifyToken(req, res);
-  if (!id) {
-    return;
-  }
+  const id = req.user;
 
   const value = await UserModel.findOne({ _id: id });
 
