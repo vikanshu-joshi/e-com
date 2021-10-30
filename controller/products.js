@@ -38,24 +38,34 @@ const getProduct = async (req, res) => {
         const product = await ProductModel.findById(pid);
         const user = await UserModel.findById(id);
 
-
         if (user) {
+            let r = user.product_history.find(i=>(i.toString())===pid)
+            if(r){
+                res.status(200).send({
+                    status: 1,
+                    error: "",
+                    message: "Product already in list.",
+                    data: product,
+                });
+            }
+            else{
+                await UserModel.findByIdAndUpdate(
+                    id,
+                    {
+                        $push: {product_history: pid},
+                    },
+                    {new: true, upsert: true}
+                );
 
-            await UserModel.findByIdAndUpdate(
-                id,
-                {
-                    $push: {product_history: pid},
-                },
-                {new: true, upsert: true}
-            );
-
-            res.status(200).send({
-                status: 1,
-                error: "",
-                message: "",
-                data: product,
-            });
+                res.status(200).send({
+                    status: 1,
+                    error: "",
+                    message: "Product added in list.",
+                    data: product,
+                });
+            }
         }
+
     } catch (e) {
         res.status(400).send({
             status: 0,
