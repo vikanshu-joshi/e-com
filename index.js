@@ -14,23 +14,23 @@ if (!config.get("jwtPrivateKey")) {
   process.exit(1);
 }
 
-mongoose
-  .connect("mongodb://localhost:27017/ecom", {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  })
-  .then(() => console.log("Connected to database..."))
-  .catch((err) => console.log(err));
 // mongoose
-//     .connect(
-//         "mongodb+srv://admin:53ua44HrHDhP7Exv@cluster0.w0uci.mongodb.net/ecom",
-//         {
-//             useUnifiedTopology: true,
-//             useNewUrlParser: true,
-//         }
-//     )
-//     .then(() => console.log("Connected to database..."))
-//     .catch((err) => console.log(err));
+//   .connect("mongodb://localhost:27017/ecom", {
+//     useUnifiedTopology: true,
+//     useNewUrlParser: true,
+//   })
+//   .then(() => console.log("Connected to database..."))
+//   .catch((err) => console.log(err));
+mongoose
+    .connect(
+        "mongodb+srv://admin:53ua44HrHDhP7Exv@cluster0.w0uci.mongodb.net/ecom",
+        {
+            useUnifiedTopology: true,
+            useNewUrlParser: true,
+        }
+    )
+    .then(() => console.log("Connected to database..."))
+    .catch((err) => console.log(err));
 
 const categories = async () => {
   const c = await ProductModel.find({}, "-_id")
@@ -57,7 +57,6 @@ const categories = async () => {
   );
 };
 
-// categories()
 
 const app = express();
 

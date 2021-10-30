@@ -4,14 +4,14 @@ const auth = require("../middleware/auth");
 
 const {
   getProduct,
-  getProductsSearch,
-  getCategories,
+  bySearch,
+  byCategory,
   createProduct,
 } = require("../controller/products");
 
 router.post("/createProduct", createProduct);
 router.get("/getProduct/:pid", auth, getProduct);
-router.get("/getProductsSearch", getProductsSearch);
-router.get("/getCategories", getCategories);
+router.get("/bySearch", bySearch);
+router.get("/byCategory", byCategory);
 
 module.exports = router;
