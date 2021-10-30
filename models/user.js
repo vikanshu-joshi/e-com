@@ -35,7 +35,7 @@ const schema = new mongoose.Schema({
   },
   product_history: {
     type: [mongoose.SchemaTypes.ObjectId],
-    ref: TABLES.PRODUCT_HISTORY,
+    ref: TABLES.PRODUCTS_TABLE,
     default: [],
   },
   created: {

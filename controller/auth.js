@@ -51,7 +51,15 @@ const login = async (req, res) => {
       },
       { new: true, upsert: true }
     );
-    return res.send(user);
+    return res.send({
+      status: 1,
+      error: "",
+      message: "",
+      data: {
+        ...user._doc,
+        token: user.authToken(),
+      },
+    });
   }
   return res
     .status(400)

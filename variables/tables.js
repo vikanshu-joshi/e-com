@@ -3,7 +3,6 @@ const USERS_TABLE = "users";
 const ORDERS_TABLE = "orders";
 const ADDRESS_TABLE = "addresses";
 const LOGIN_HISTORY = "login history";
-const PRODUCT_HISTORY= "product history";
 
 module.exports = {
   USERS_TABLE,
@@ -11,5 +10,4 @@ module.exports = {
   ORDERS_TABLE,
   ADDRESS_TABLE,
   LOGIN_HISTORY,
-  PRODUCT_HISTORY
 };

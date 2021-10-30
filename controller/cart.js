@@ -4,7 +4,7 @@ const UserModel = require("../models/user");
 
 const getCart = async (req, res) => {
   const id = req.user;
-  const user = await UserModel.findById(id);
+  const user = await UserModel.findById(id).populate("cart");
   return res.send({
     status: 1,
     error: "",
