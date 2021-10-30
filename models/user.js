@@ -33,6 +33,11 @@ const schema = new mongoose.Schema({
     ref: TABLES.LOGIN_HISTORY,
     default: [],
   },
+  product_history: {
+    type: [mongoose.SchemaTypes.ObjectId],
+    ref: TABLES.PRODUCT_HISTORY,
+    default: [],
+  },
   created: {
     type: Number,
     default: Math.floor(+new Date() / 1000),

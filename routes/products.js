@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const auth = require("../middleware/auth");
 
-const {getProducts, getProductsSearch, getCategories, createProduct} = require("../controller/products");
+const {getProduct, getProductsSearch, getCategories, createProduct} = require("../controller/products");
 
 router.post('/createProduct',createProduct)
-router.get('/getProducts', getProducts);
+router.get('/getProduct/:pid', auth, getProduct);
 router.get('/getProductsSearch', getProductsSearch);
 router.get('/getCategories', getCategories);
 

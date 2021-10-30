@@ -1,4 +1,6 @@
 const ProductModel = require("../models/products");
+const HistoryModel = require("../models/product_history");
+const UserModel = require("../models/user");
 
 const createProduct = async (req, res) => {
 
@@ -23,10 +25,36 @@ const createProduct = async (req, res) => {
     }
 }
 
-const getProducts = async (req, res) => {
+const getProduct = async (req, res) => {
     try {
-        const products = await ProductModel.find();
-        res.status(200).send(products);
+        const id = req.user;
+        const pid = req.params.pid;
+
+        if (!pid) {
+            return res.send({
+                status: 0,
+                error: "Product id is required",
+                message: "",
+                data: "",
+            });
+        }
+
+        const product = await ProductModel.findById(pid);
+        const user = await UserModel.findById(id);
+        if (user){
+            const history = new HistoryModel({
+                product_id:pid
+            });
+            await history.save();
+            await UserModel.findByIdAndUpdate(
+                id,
+                {
+                    $push: { product_history: history._id },
+                },
+                { new: true, upsert: true }
+            );
+            res.status(200).send(product);
+        }
     } catch (e) {
         res.status(400).send(e.message);
     }
@@ -35,17 +63,30 @@ const getProducts = async (req, res) => {
 
 const getProductsSearch = async (req, res) => {
     try {
-        const {search} = req.query
+        const search = req.query.search;
+        const maxp = req.query.maxp;
+        const minp = req.query.minp;
+        const maxr = req.query.maxr;
+        const minr = req.query.minr;
+        const sort = req.query.s;
 
         const prods = await ProductModel
-                                .find({
-                                    $or: [{product_name: {'$regex': search, '$options': 'i'}}, {
-                                        product_category_tree: {
-                                            '$regex': search,
-                                            '$options': 'i'
-                                        }
-                                    }, {brand: {'$regex': search, '$options': 'i'}}]
-                                });
+            .find({
+                $and: [
+                    {
+                        $or: [
+                            {product_name: {'$regex': `${search}`, '$options': 'i'}},
+                            {product_category_tree: {'$regex': `${search}`, '$options': 'i'}},
+                            {brand: {'$regex': `${search}`, '$options': 'i'}}
+                        ]
+                    },
+                    {discounted_price: {$lte: maxp || 1000000000, $gte: minp || 0}},
+                    {overall_rating: {$lte: maxr || 5, $gte: minr || 0}},
+                ]
+            })
+            .limit(200)
+            .sort({discounted_price: sort})
+            .lean();
 
 
         res.status(200).send(prods)
@@ -55,22 +96,36 @@ const getProductsSearch = async (req, res) => {
 };
 const getCategories = async (req, res) => {
     try {
-        const {category} = req.query;
-        // ProductModel.ensureIndexes({product_category_tree:'text'})
-        // const prods = await ProductModel
-        //     .find({ $text:{$search:category, $caseSensitive:false}
-        //
-        //     }, {score: {$meta: 'textscore'}})
-        //     .sort({
-        //         score: {$meta: 'textscore'}
-        //     })
+        let c = []
+        const category = req.query.c;
+        const maxp = req.query.maxp;
+        const minp = req.query.minp;
+        const maxr = req.query.maxr;
+        const minr = req.query.minr;
+        const sort = req.query.s;
+
+        if (typeof category === 'string') {
+            c.push(category);
+            c.push('');
+            c.push('');
+        } else {
+            c = category;
+        }
+
         const prods = await ProductModel
-                                .find({
-                                    product_category_tree: {
-                                        '$regex': category,
-                                        '$options': 'i'
-                                    }
-                                })
+            .find({
+                $and: [
+                    {product_category_tree: {'$regex': `${c[0]}`, '$options': 'i'}},
+                    {product_category_tree: {'$regex': `${c[1]}`, '$options': 'i'}},
+                    {product_category_tree: {'$regex': `${c[2]}`, '$options': 'i'}},
+                    {discounted_price: {$lte: maxp || 1000000000, $gte: minp || 0}},
+                    {overall_rating: {$lte: maxr || 5, $gte: minr || 0}},
+                ]
+
+            })
+            .limit(200)
+            .sort({discounted_price: sort})
+            .lean();
 
         res.status(200).send(prods)
 
@@ -83,7 +138,7 @@ const getCategories = async (req, res) => {
 
 module.exports = {
     createProduct,
-    getProducts,
+    getProduct,
     getProductsSearch,
     getCategories
 }
