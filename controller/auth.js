@@ -7,7 +7,6 @@ const requestIp = require("request-ip");
 const geoip = require("geoip-lite");
 
 const login = async (req, res) => {
-  console.log(req.body);
   if (!req.body.email && !validator.isEmail(`${req.body.email}`)) {
     return res.status(400).send({
       status: 0,

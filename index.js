@@ -74,7 +74,6 @@ app.use("/addresses", addressRoutes);
 app.use("/cart", cartRoutes);
 app.use("/product", productRoutes);
 app.get("/getCategories", async (req, res) => {
-  console.log(req.headers);
   return res.send(await categories());
 });
 
