@@ -65,15 +65,15 @@ const categories = async () => {
 
 const app = express();
 
-app.use(express.static(path.resolve(__dirname, "../e-com/client/public/")));
+// app.use(express.static(path.resolve(__dirname, "../e-com/client/public/")));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/auth", authRoutes);
-app.use("/addresses", addressRoutes);
-app.use("/cart", cartRoutes);
-app.use("/product", productRoutes);
-app.get("/getCategories", async (req, res) => {
+app.use("/api/auth", authRoutes);
+app.use("/api/addresses", addressRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/product", productRoutes);
+app.get("/api/getCategories", async (req, res) => {
   return res.send(await categories());
 });
 

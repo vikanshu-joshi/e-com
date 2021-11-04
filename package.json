@@ -9,6 +9,7 @@
   "author": "vikanshu",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.24.0",
     "config": "^3.3.6",
     "express": "^4.17.1",
     "geoip-lite": "^1.4.2",
