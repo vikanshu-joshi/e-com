@@ -20,12 +20,12 @@ export const getCategories = async () => {
 
 export const loginUser = async (email, password) => {
   try {
-    const response = await axiosRequest.get("/api/auth/login", {
-      data: {
-        email,
-        password,
-      },
-    });
+    const response = await axiosRequest.post("/api/auth/login", {
+          data: {
+            email,
+            password,
+          },
+        });
     return response;
   } catch (ex) {
     return ex;
