@@ -44,19 +44,18 @@ const login = async (req, res) => {
 
     await history.save();
 
-    await UserModel.findByIdAndUpdate(
-      user._id,
-      {
-        $push: { login_history: history._id },
-      },
-      { new: true, upsert: true }
-    );
+    // await UserModel.findByIdAndUpdate(
+    //   user._id,
+    //   {
+    //     $push: { login_history: history._id },
+    //   },
+    //   { new: true, upsert: true }
+    // );
     return res.send({
       status: 1,
       error: "",
       message: "",
       data: {
-        ...user._doc,
         token: user.authToken(),
       },
     });

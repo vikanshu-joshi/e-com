@@ -8,6 +8,6 @@ router.post("/add", auth, addressController.addAddress);
 
 router.delete("/delete/:id", auth, addressController.delAddress);
 
-router.get("/getAddresses", auth, addressController.getAddresses);
+router.get("/get", auth, addressController.getAddresses);
 
 module.exports = router;
