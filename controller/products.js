@@ -39,16 +39,15 @@ const getProduct = async (req, res) => {
         const user = await UserModel.findById(id);
 
         if (user) {
-            let r = user.product_history.find(i=>(i.toString())===pid)
-            if(r){
+            let r = user.product_history.find(i => (i.toString()) === pid)
+            if (r) {
                 res.status(200).send({
                     status: 1,
                     error: "",
                     message: "Product already in list.",
                     data: product,
                 });
-            }
-            else{
+            } else {
                 await UserModel.findByIdAndUpdate(
                     id,
                     {
@@ -70,7 +69,7 @@ const getProduct = async (req, res) => {
         res.status(400).send({
             status: 0,
             error: e.message,
-            message: "",
+            message: "ERROR",
             data: "",
         });
     }
@@ -79,49 +78,54 @@ const getProduct = async (req, res) => {
 const bySearch = async (req, res) => {
     const perPage = 8;
     try {
+        let minp,minr,maxp,maxr;
+
         const search = req.query.search;
-        const maxp = req.query.maxp;
-        const minp = req.query.minp;
-        const maxr = req.query.maxr;
-        const minr = req.query.minr;
-        const ps = req.query.ps;
-        const rs = req.query.rs;
-        const ns = req.query.pns;
+        const priceRange = req.query.priceR
+        const ratingRange = req.query.ratingR
+        const s = req.query.s==='undefined'?{}:req.query.s;
         const page = req.query.page;
-        let s;
-        if(ps){
-            s = {discounted_price:ps};
-        }else if(rs){
-            s = {overall_rating:rs};
-        } else if(ns){
-            s = {product_name:ns}
+        if(priceRange) {
+             [minp, maxp] = priceRange.split("-");
+        }
+        if(ratingRange) {
+             [minr, maxr] = ratingRange.split("-");
         }
 
-        const filter = {
-            $and: [
-                {
-                    $or: [
-                        {product_name: {$regex: `${search}`, $options: "i"}},
-                        {product_category_tree: {$regex: `${search}`, $options: "i"}},
-                        {brand: {$regex: `${search}`, $options: "i"}},
-                    ],
-                },
-                {discounted_price: {$lte: maxp || 1000000000, $gte: minp || 0}},
-                {overall_rating: {$lte: maxr || 5, $gte: minr || 0}},
-            ],
-        };
+        let sort;
+        if (s === "pAsc") {
+            sort = {discounted_price: 1};
+        } else if (s === "pDesc") {
+            sort = {discounted_price: -1};
+        } else if (s === "rateRank") {
+            sort = {overall_rating: -1};
+        }else sort=s;
 
-        const count = await ProductModel.countDocuments(filter);
-        const prods = await ProductModel.find(filter)
+        const filters={
+            $and:[
+                {
+                $or:[
+                    CreateSearchMongoQuery('product_name',search),
+                    CreateSearchMongoQuery('product_category_tree',search),
+                    CreateSearchMongoQuery('brand',search)
+                ],
+            },
+                CreateRangeMongoQuery('discounted_price',minp,maxp,10000000),
+                CreateRangeMongoQuery('overall_rating',minr,maxr,5),
+            ].filter(q => q !== null)
+        }
+
+        const count = await ProductModel.countDocuments(filters);
+        const prods = await ProductModel.find(filters)
             .skip(page * perPage)
             .limit(perPage)
-            .sort(s)
+            .sort(sort)
             .lean();
 
         res.status(200).send({
             status: 1,
             error: "",
-            message: "",
+            message: filters,
             data: {
                 count: count,
                 results: prods,
@@ -130,63 +134,63 @@ const bySearch = async (req, res) => {
             },
         });
     } catch (e) {
-        res.status(400).send(e.message);
-    }
+        res.status(400).send({
+            status: 0,
+            error: e.message,
+            message: "ERROR",
+            data: {}
+        })    }
 };
 
 const byCategory = async (req, res) => {
     const perPage = 8;
     try {
-        let c = [];
+        let minp,minr,maxp,maxr;
         const category = req.query.c;
-        const maxp = req.query.maxp;
-        const minp = req.query.minp;
-        const maxr = req.query.maxr;
-        const minr = req.query.minr;
-        const ps = req.query.ps;
-        const rs = req.query.rs;
-        const ns = req.query.pns;
+        const priceRange = req.query.priceR
+        const ratingRange = req.query.ratingR
+        const s = req.query.s==='undefined'?{}:req.query.s;
         const page = req.query.page;
-        let s;
-        if(ps){
-            s = {discounted_price:ps};
-        }else if(rs){
-            s = {overall_rating:rs};
-        } else if(ns){
-            s = {product_name:ns}
+        if(priceRange) {
+             [minp, maxp] = priceRange.split("-");
+        }
+        if(ratingRange) {
+             [minr, maxr] = ratingRange.split("-");
         }
 
+        let c = category.split('-');
 
-        if (typeof category === "string") {
-            c.push(category);
-            c.push("");
-            c.push("");
-        } else {
-            c = category;
+        let sort;
+        if (s === "pAsc") {
+            sort = {discounted_price: 1};
+        } else if (s === "pDesc") {
+            sort = {discounted_price: -1};
+        } else if (s === "rateRank") {
+            sort = {overall_rating: -1};
+        }else sort=s;
+
+        const filters={
+            $and:[
+                CreateSearchMongoQuery('product_category_tree',c[0]),
+                CreateSearchMongoQuery('product_category_tree',c[1]),
+                CreateSearchMongoQuery('product_category_tree',c[2]),
+                CreateRangeMongoQuery('discounted_price',minp,maxp,10000000),
+                CreateRangeMongoQuery('overall_rating',minr,maxr,5),
+            ].filter(q => q !== null)
         }
 
-        const filter = {
-            $and: [
-                {product_category_tree: {$regex: `${c[0]}`, $options: "i"}},
-                {product_category_tree: {$regex: `${c[1]}`, $options: "i"}},
-                {product_category_tree: {$regex: `${c[2]}`, $options: "i"}},
-                {discounted_price: {$lte: maxp || 1000000000, $gte: minp || 0}},
-                {overall_rating: {$lte: maxr || 5, $gte: minr || 0}},
-            ],
-        };
+        const count = await ProductModel.countDocuments(filters);
 
-        const count = await ProductModel.countDocuments(filter);
-
-        const prods = await ProductModel.find(filter)
+        const prods = await ProductModel.find(filters)
             .skip(page * perPage)
             .limit(perPage)
-            .sort(s)
+            .sort(sort)
             .lean();
 
         res.status(200).send({
             status: 1,
             error: "",
-            message: "",
+            message: filters,
             data: {
                 count: count,
                 results: prods,
@@ -195,9 +199,26 @@ const byCategory = async (req, res) => {
             },
         });
     } catch (e) {
-        res.status(400).send(e.message);
+        res.status(400).send({
+            status: 0,
+            error: e.message,
+            message: "ERROR",
+            data: {}
+        })
     }
 };
+
+function CreateSearchMongoQuery(prop,value){
+    return value === undefined ? null : {[prop]: {$regex: `${value}`, $options: "i"}};
+}
+function CreateRangeMongoQuery(prop,minvalue,maxvalue,defaultMax) {
+    if (minvalue === undefined && maxvalue === undefined) {
+        return null;
+    } else {
+        return {[prop]: {$lte: parseInt([maxvalue], 10)||defaultMax, $gte: parseInt([minvalue], 10)||0}}
+    }
+
+}
 
 module.exports = {
     createProduct,
