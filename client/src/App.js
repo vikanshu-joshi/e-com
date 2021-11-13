@@ -1,7 +1,15 @@
-import "./App.css";
-import * as API from "./config/apiConfig";
-import React, { useEffect, useState } from "react";
+import React, {useState} from "react";
+import * as API from './config/apiConfig';
+import {BrowserRouter as Router,Routes, Route} from 'react-router-dom';
+import Login from "./components/Login/login";
+import Signup from "./components/Signup/signup";
+import Home from "./components/Home/home";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Navbar from "./components/Navbar/navbar";
+import Cart from "./components/Cart/cart";
+import Search from "./components/Search/search";
+import Checkout from "./components/Checkout/checkout";
+import Product from "./components/Product/product";
 
 function App() {
   const [state, setstate] = useState({
@@ -137,44 +145,20 @@ function App() {
   }
 
   return (
-    <div className="form-group">
-      <h1>API</h1>
-      <div className="row mb-4">
-        <div className="btn btn-primary col-2 m-1" onClick={login}>
-          LOGIN
-        </div>
-        <div className="btn btn-primary col-2 m-1" onClick={create}>
-          SIGNUP
-        </div>
-        <div className="btn btn-primary col-3 m-1" onClick={changePassword}>
-          CHANGE PASSWORD
-        </div>
-      </div>
-      <div className="row mb-4">
-        <div className="btn btn-primary col-2 m-1" onClick={getProfile}>
-          GET PROFILE
-        </div>
-        <div className="btn btn-primary col-2 m-1" onClick={getCart}>
-          GET CART
-        </div>
-        <div className="btn btn-primary col-3 m-1" onClick={getAddresses}>
-          GET ADDRESSES
-        </div>
-      </div>
-      <div className="row mb-4">
-        <div className="btn btn-primary col-2 m-1" onClick={bySearch}>
-          GET PRODUCTS BY SEARCH
-        </div>
-        <div className="btn btn-primary col-2 m-1" onClick={byCategory}>
-          GET PRODUCTS BY CATEGORY
-        </div>
-      </div>
-      <textarea
-        className="form-control"
-        rows={20}
-        value={JSON.stringify(state, undefined, 4)}
-      />
-    </div>
+        <Router>
+          <div>
+            <Navbar/>
+            <Routes>
+              <Route path='/' element={<Login/>}/>
+              <Route path='/home' element={<Home/>}/>
+              <Route path='/signup' element={<Signup/>}/>
+              <Route path='/cart' element={<Cart/>}/>
+              <Route path='/checkout' element={<Checkout/>}/>
+              <Route path='/search' element={<Search/>}/>
+              <Route path='/product' element={<Product/>}/>
+            </Routes>
+          </div>
+        </Router>
   );
 }
 
