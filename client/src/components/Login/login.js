@@ -1,70 +1,127 @@
-import React, {useState} from 'react';
-import {Button, Paper, Grid, Typography, Container} from '@mui/material';
-import Input from './input';
-import {Link} from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  Button,
+  Paper,
+  Grid,
+  Typography,
+  Container,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import Input from "../input";
+import { useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import * as API from "../../config/apiConfig";
 
-const initialState = {firstName: '', lastName: '', email: '', password: '', confirmPassword: ''};
+const initialState = {
+  email: "",
+  password: "",
+};
 
-const Login = () => {
+const Login = (props) => {
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState(initialState);
+  const [snackbar, setsnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [isSignup, setIsSignUp] = useState(false);
-    const [formData, setFormData] = useState(initialState)
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    const switchMode = () => {
-        setIsSignUp((prevIsSignUp) => !prevIsSignUp);
-        setShowPassword(false);
+  const handleLogin = async () => {
+    const response = await API.loginUser({
+      email: formData.email,
+      password: formData.password,
+    });
+    if (response.status == 0) {
+      setsnackbar({
+        ...snackbar,
+        open: true,
+        message: response.error,
+        severity: "error",
+      });
+    } else {
+      localStorage.setItem("jwtToken", response.data.token);
+      setsnackbar({
+        ...snackbar,
+        open: true,
+        message: response.error,
+        severity: "success",
+      });
+      navigate("/home");
     }
+  };
 
-    const handleChange = (e) => {
-        setFormData({...formData, [e.target.name]: e.target.value})
+  const hideSnackbar = () => {
+    if (snackbar.open) {
+      setsnackbar({ ...snackbar, open: false, message: "", severity: "info" });
     }
+  };
 
+  const handleShowPassword = () =>
+    setShowPassword((prevShowPassword) => !prevShowPassword);
 
-    const handleShowPassword = () => setShowPassword((prevShowPassword) => !prevShowPassword)
-    return (
-        <Container component="main" maxWidth="xs">
-            <Paper elevation={3}>
-                <Typography variant="h5">{isSignup ? 'SIGNUP' : 'LOGIN'}</Typography>
-                <form>
-                    <Grid container spacing={2}>
-                        {
-                            isSignup && (
-                                <>
-                                    <Input name="firstName" label="FIRST NAME" handleChange={handleChange} autoFocus
-                                           half/>
-                                    <Input name="lastName" label="LAST NAME" handleChange={handleChange} autoFocus
-                                           half/>
-
-                                </>
-                            )
-                        }
-                        <Input name="email" label="Email Address" handleChange={handleChange} type="email"/>
-                        <Input name="password" label="Password" handleChange={handleChange}
-                               type={showPassword ? "text" : "password"} handleShowPassword={handleShowPassword}/>
-                        {isSignup && <Input name="confirmPassword" label="Repeat Password" handleChange={handleChange}
-                                            type="password"/>}
-                    </Grid>
-
-                    <Button type="submit" fullWidth variant="contained" color="primary">
-                        {isSignup ? "SIGNUP" : "LOGIN"}
-                    </Button>
-                    <Grid container justify="flex-end">
-                        <Grid item>
-                            <Button onClick={switchMode}>
-                                {isSignup ? "Already have an account? LOG IN" : "Don't have an account? SIGN UP"}
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Button component={Link} to='/forgotpassword'>
-                                FORGOT PASSWORD?
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </form>
-            </Paper>
-        </Container>
-    )
-}
+  return (
+    <Container component="main" maxWidth="xs">
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={hideSnackbar}
+      >
+        <Alert
+          onClose={hideSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+      <Paper elevation={3}>
+        <Typography variant="h5">LOGIN</Typography>
+        <form>
+          <Grid container spacing={2}>
+            <Input
+              name="email"
+              label="Email Address"
+              handleChange={handleChange}
+              type="email"
+            />
+            <Input
+              name="password"
+              label="Password"
+              handleChange={handleChange}
+              type={showPassword ? "text" : "password"}
+              handleShowPassword={handleShowPassword}
+            />
+          </Grid>
+          <Button
+            onClick={handleLogin}
+            fullWidth
+            variant="contained"
+            color="primary"
+          >
+            LOGIN
+          </Button>
+          <Grid container justify="flex-end">
+            <Grid item>
+              <Button component={Link} to="/signup">
+                Don't have an account? SIGN UP
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button component={Link} to="/forgotpassword">
+                FORGOT PASSWORD?
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+    </Container>
+  );
+};
 
 export default Login;

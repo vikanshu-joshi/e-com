@@ -1,48 +1,93 @@
-import './signup.css';
-import React, {useState} from "react";
+import "./signup.css";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as API from "../../config/apiConfig";
+import { Button, Paper, Grid, Typography, Container } from "@mui/material";
+import Input from "../input";
+import { Link } from "react-router-dom";
 
-function Signup(){
-    const [state, setstate] = useState({
-        status: 0,
-        baseURL: "",
-        data: {},
-        headers: {},
-        url: "",
-        response: {},
-    });
-    const create = async () => {
-        const response = await API.createUser({
-            email: "joshi77@gmail.com",
-            password: "12$A!789",
-            name: "joshi",
-            phone: "9999999999",
-        });
-        setstate({
-            baseURL: response.config.baseURL,
-            headers: response.config.headers,
-            url: response.config.url,
-            data: JSON.parse(response.config.data),
-            response: response.data,
-            status: response.status,
-        });
-    };
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 
+function Signup() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState(initialState);
 
-    return(
-        <>
-            <div className="btn btn-primary col-2 m-1" onClick={create}>
-                SIGNUP
-            </div>
-            <textarea
-                className="form-control"
-                rows={20}
-                value={JSON.stringify(state, undefined, 4)}
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = () => {};
+
+  const handleShowPassword = () =>
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <Paper elevation={3}>
+        <Typography variant="h5">SIGNUP</Typography>
+        <form>
+          <Grid container spacing={2}>
+            <Input
+              name="firstName"
+              label="FIRST NAME"
+              handleChange={handleChange}
+              autoFocus
+              half
+            />
+            <Input
+              name="lastName"
+              label="LAST NAME"
+              handleChange={handleChange}
+              autoFocus
+              half
             />
 
-        </>
-    )
+            <Input
+              name="email"
+              label="Email Address"
+              handleChange={handleChange}
+              type="email"
+            />
+            <Input
+              name="password"
+              label="Password"
+              handleChange={handleChange}
+              type={showPassword ? "text" : "password"}
+              handleShowPassword={handleShowPassword}
+            />
+            <Input
+              name="confirmPassword"
+              label="Repeat Password"
+              handleChange={handleChange}
+              type="password"
+            />
+          </Grid>
+
+          <Button type="submit" fullWidth variant="contained" color="primary">
+            SIGNUP
+          </Button>
+          <Grid container justify="flex-end">
+            <Grid item>
+              <Button component={Link} to="/">
+                Already have an account? LOG IN
+              </Button>
+            </Grid>
+            <Grid item>
+              <Button component={Link} to="/forgotpassword">
+                FORGOT PASSWORD?
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+    </Container>
+  );
 }
 
 export default Signup;
