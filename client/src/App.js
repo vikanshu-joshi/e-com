@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import * as API from './config/apiConfig';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter as Router, useLocation, Route,Routes } from 'react-router-dom';
+import { useLocation, Route, Routes} from 'react-router-dom';
 import Login from "./components/Login/login";
 import Signup from "./components/Signup/signup";
-import Navbar from "./components/Navbar/navbar2";
+import Navbar from "./components/Navbar/navbar";
 import Cart from "./components/Cart/cart";
 import Search from "./components/Search/search";
 import Checkout from "./components/Checkout/checkout";
@@ -147,25 +147,23 @@ function App() {
     }
 
     return (
-            <div>
-                <Routes>
-                    {location.pathname === '/' || location.pathname === '/signup' || location.pathname === '/forgotpassword' ?
-                        null :
-                        <Navbar/>
-                    }
-                    <Route path='/' element={<Login/>}/>
-                    <Route path='/home' element={<Home/>}/>
-                    <Route path='/signup' element={<Signup/>}/>
-                    <Route path='/forgotpassword' element={<ForgotPassword/>}/>
-                    <Route path='/cart' element={<Cart/>}/>
-                    <Route path='/checkout' element={<Checkout/>}/>
-                    <Route path='/search' element={<Search/>}/>
-                    <Route path='/product/:pid' element={<Product/>}/>
-                </Routes>
+        <div>
+            {location.pathname === '/' || location.pathname === '/signup' || location.pathname === '/forgotpassword' ?
+                null :
+                <Navbar/>
+            }
+            <Routes>
+                <Route path='/' element={<Login/>}/>
+                <Route path='/home' element={<Home/>}/>
+                <Route path='/signup' element={<Signup/>}/>
+                <Route path='/forgotpassword' element={<ForgotPassword/>}/>
+                <Route path='/cart' element={<Cart/>}/>
+                <Route path='/checkout' element={<Checkout/>}/>
+                <Route path='/search' element={<Search/>}/>
+                <Route path='/product/:pid' element={<Product/>}/>
+            </Routes>
 
-            </div>
-
-
+        </div>
     );
 }
 

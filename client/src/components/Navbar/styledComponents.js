@@ -1,20 +1,16 @@
 import {alpha, styled} from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
-import {createTheme} from "@mui/material";
 
-const theme = createTheme({
-    navbar: {
-        darkBlue: '#131A22',
-        midBlue:'#232F3E',
-        lightBlue:'#37475A',
-        orange:'#FEBD69'
-    },
-});
-
- const Search = styled('div')(({theme}) => ({
+export const Search = styled('div')(({theme}) => ({
     position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.navbar.darkBlue, 0.15),
+    display: 'flex',
+    alignItems: 'center',
+    borderRadius:'9px 9px 9px 9px',
+    backgroundColor: alpha("#232F3E", 1),
+    border:'1px solid #37475A',
+    '&:hover': {
+        backgroundColor: alpha("#232F3E", 0.9),
+    },
     marginRight: theme.spacing(2),
     marginLeft: 0,
     width: '100%',
@@ -24,22 +20,26 @@ const theme = createTheme({
     },
 }));
 
- const SearchIconWrapper = styled('div')(({theme}) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
+export const SearchIconWrapper = styled('div')(({theme}) => ({
+    position: 'relative',
+    borderRadius: '0px 9px 9px 0px',
+    backgroundColor: alpha('#fc8c03',1),
+    '&:hover': {
+        backgroundColor: alpha('#fc8c03',0.9),
+    },
+    height: '40px',
+    width: '50px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
 }));
 
-const StyledInputBase = styled(InputBase)(({theme}) => ({
+export const StyledInputBase = styled(InputBase)(({theme}) => ({
     color: 'inherit',
+    marginLeft: '10px',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        paddingRight: `calc(1em )`,
         transition: theme.transitions.create('width'),
         width: '100%',
         [theme.breakpoints.up('md')]: {
@@ -48,8 +48,15 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
     },
 }));
 
-module.export = {
-    Search,
-    SearchIconWrapper,
-    StyledInputBase
-}
+export const CartIconWrapper = styled('div')(({theme}) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha('#fc8c03',1),
+    '&:hover': {
+        backgroundColor: alpha('#fc8c03',0.9),
+    },
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}))
